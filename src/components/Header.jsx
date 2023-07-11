@@ -1,15 +1,16 @@
-import { Link } from "react-router-dom";
+export default function Header({titulo}){
 
-export function Header() {
+    
   return (
-    <div>
-      <h2>Header</h2>
-      <Link to="/">
-        <button>Home</button>
-      </Link>
-      <Link to="/Exemplo">
-        <button>Exemplo</button>
-      </Link>
-    </div>
-  );
+      <div className="content-header">
+          <div className="container">
+              <div className="row mb-2">
+              <div className="col-sm-6">
+                  <h1 className="m-0"> {titulo} </h1>
+              </div>
+              </div>
+          </div>
+      </div>
+  )
 }
+
