@@ -1,4 +1,4 @@
-export default function Indicadores({dados}) {
+export function Indicadores({dados}) {
     return (
         <>
         <h5 className="mb-2">Indicadores Capes</h5>

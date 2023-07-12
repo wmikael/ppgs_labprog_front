@@ -1,4 +1,4 @@
-export default function Filtro({programas, filtroProg, onProgChange, 
+export function Filtro({programas, filtroProg, onProgChange, 
                               filtroAnoIni, onAnoIniChange,
                               filtroAnoFim, onAnoFimChange, 
                               onSearch}) {
