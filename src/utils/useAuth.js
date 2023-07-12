@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 export function useAuth() {
     const navigate = useNavigate();
-    // const token = localStorage.getItem('authToken');
-    const token = true
+    const token = localStorage.getItem('token');
+    // console.log(token)
+    // const token = false
 
     useEffect(() => {
         if (!token) {

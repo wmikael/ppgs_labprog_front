@@ -4,12 +4,11 @@ export function Navbar({ titulo }) {
   return (
     <nav className="main-header navbar navbar-expand-md navbar-light navbar-white">
       <div className="container">
-        
-        <a className="navbar-brand">
+        <li className="navbar-brand">
           <Link to="/programa" className="brand-text font-weight-light">
             {titulo}
           </Link>
-        </a>
+        </li>
 
         <button
           className="navbar-toggler order-1"
