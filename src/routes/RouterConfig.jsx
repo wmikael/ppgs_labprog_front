@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Exemplo } from "../pages/Exemplo";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { Programa } from "../pages/Programa";
+import { Programa } from "../pages/Programa/Programa";
 import { TesteDataTable } from "../pages/TesteDataTable";
 import { Docente } from "../pages/Docente";
 import { LoginPage } from "../pages/LoginPage/LoginPage";

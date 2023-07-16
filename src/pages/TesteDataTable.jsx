@@ -285,16 +285,7 @@ export function TesteDataTable() {
     axios
       .get("http://localhost:8080/api/producao/all")
       .then((response) => {
-        const fetchedData = response.data.map((item) => {
-          const updatedItem = Object.assign({}, item);
-          for (const key in updatedItem) {
-            if (updatedItem[key] === null) {
-              updatedItem[key] = "";
-            }
-          }
-          return updatedItem;
-        });
-        setData(fetchedData);
+        setData([...response.data]);
       })
       .catch((error) => {
         console.error(error);
@@ -304,11 +295,9 @@ export function TesteDataTable() {
   return (
     <div className="teste">
       <div>
-        <Header titulo="table" />
+        <Header titulo="Produções" />
       </div>
-      <div>
-        <DataTableComponent data={data} />
-      </div>
+      <div>{data.length > 0 && <DataTableComponent data={data} />}</div>
     </div>
   );
 }
