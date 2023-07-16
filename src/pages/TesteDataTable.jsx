@@ -283,7 +283,7 @@ export function TesteDataTable() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/producao/all")
+      .get("http://localhost:8080/api/producao/all-programas")
       .then((response) => {
         setData([...response.data]);
       })

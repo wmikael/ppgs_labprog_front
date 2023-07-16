@@ -1,19 +1,50 @@
-export function FiltrosPrograma() {
+import { useState } from "react";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+
+export default function FiltrosPrograma({programa, anoIni, anoFim}) {
+  const [selectedCity, setSelectedCity] = useState(null);
+  const cities = [
+    { name: "New York", code: "NY" },
+    { name: "Rome", code: "RM" },
+    { name: "London", code: "LDN" },
+    { name: "Istanbul", code: "IST" },
+    { name: "Paris", code: "PRS" },
+  ];
+
+  const styleFiltrosContainer = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: "20px",
+  };
+
+  const styleInputContainer = {
+    marginLeft: "10px",
+    marginRight: "10px",
+  };
+
   return (
-    <div className="filtros">
-      <h2>Filtros</h2>
-      <label htmlFor="programa">Selecione o programa:</label>
-      <select id="programa">
-        <option value>--Selecione o programa--</option>
-        <option value="programa1">Programa 1</option>
-        <option value="programa2">Programa 2</option>
-        <option value="programa3">Programa 3</option>
-        {/* Adicione mais opções conforme necessário */}
-      </select>
-      <label htmlFor="anoInicio">Ano de início:</label>
-      <input type="text" id="anoInicio" />
-      <label htmlFor="anoFim">Ano de fim:</label>
-      <input type="text" id="anoFim" />
+    <div style={styleFiltrosContainer}>
+      <div>
+        <h4>Filtros:</h4>
+      </div>
+      <div style={styleInputContainer}>
+        <Dropdown
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.value)}
+          options={programa}
+          optionLabel="name"
+          placeholder="Seleciona o Programa"
+          className="w-full md:w-14rem"
+        />
+      </div>
+      <div style={styleInputContainer}>
+        <InputText keyfilter="int" placeholder="Ano Inicial" onChange={(e)=> set} />
+      </div>
+      <div style={styleInputContainer}>
+        <InputText keyfilter="int" placeholder="Ano Final" />
+      </div>
     </div>
   );
 }
