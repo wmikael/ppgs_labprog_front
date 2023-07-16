@@ -1,26 +1,9 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
-export function Navbar({ titulo }) {
+export function Navbar() {
   return (
     <nav className="main-header navbar navbar-expand-md navbar-light navbar-white">
       <div className="container">
-        <li className="navbar-brand">
-          <Link to="/programa" className="brand-text font-weight-light">
-            {titulo}
-          </Link>
-        </li>
-
-        <button
-          className="navbar-toggler order-1"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarCollapse"
-          aria-controls="navbarCollapse"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
         <div className="collapse navbar-collapse order-3" id="navbarCollapse">
           <ul className="navbar-nav">
             <li className="nav-item">
@@ -35,7 +18,7 @@ export function Navbar({ titulo }) {
             </li>
             <li>
               <Link to="/teste-data-table" className="nav-link">
-                Table
+                Lista de Produções
               </Link>
             </li>
           </ul>
