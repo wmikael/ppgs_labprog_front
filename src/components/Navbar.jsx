@@ -31,7 +31,7 @@ export function Navbar() {
     const start = <h2>SPPG</h2>;
     // const end = <InputText placeholder="Search" type="text" className="w-full"/>;
     const style = {
-        width: '80vw'
+        width: '70vw'
     }
     
     return (
