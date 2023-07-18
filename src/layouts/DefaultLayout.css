@@ -1,0 +1,12 @@
+.background {
+    background-color: rgb(219, 219, 219);
+}
+
+.container {
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}

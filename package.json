@@ -10,9 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "admin-lte": "^3.2.0",
+    "adminlte-2-react": "^0.2.0",
+    "axios": "^1.4.0",
+    "chart.js": "^4.3.0",
+    "primeicons": "^6.0.1",
+    "primereact": "^9.6.0",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.1"
+    "react-router-dom": "^6.14.1",
+    "react-select": "^5.7.3"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
