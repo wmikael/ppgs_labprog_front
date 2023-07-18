@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 
-export default function FiltrosPrograma({ programas, anoIni, anoFim }) {
+export default function FiltrosPrograma({
+  programas,
+  anoIni,
+  anoFim,
+  onFiltrosChange,
+}) {
   const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [inputAnoIni, setInputAnoIni] = useState(anoIni);
   const [inputAnoFim, setInputAnoFim] = useState(anoFim);
@@ -43,7 +48,10 @@ export default function FiltrosPrograma({ programas, anoIni, anoFim }) {
           keyfilter="int"
           placeholder="Ano Inicial"
           value={inputAnoIni}
-          onChange={(e) => setInputAnoIni(e.target.value)}
+          onChange={(e) => {
+            setInputAnoIni(e.target.value);
+            onFiltrosChange(selectedPrograma, e.target.value, inputAnoFim);
+          }}
         />
       </div>
       <div style={styleInputContainer}>
@@ -51,7 +59,10 @@ export default function FiltrosPrograma({ programas, anoIni, anoFim }) {
           keyfilter="int"
           placeholder="Ano Final"
           value={inputAnoFim}
-          onChange={(e) => setInputAnoFim(e.target.value)}
+          onChange={(e) => {
+            setInputAnoFim(e.target.value);
+            onFiltrosChange(selectedPrograma, inputAnoIni, e.target.value);
+          }}
         />
       </div>
     </div>
