@@ -2,15 +2,10 @@ import { useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 
-export default function FiltrosPrograma({programa, anoIni, anoFim}) {
-  const [selectedCity, setSelectedCity] = useState(null);
-  const cities = [
-    { name: "New York", code: "NY" },
-    { name: "Rome", code: "RM" },
-    { name: "London", code: "LDN" },
-    { name: "Istanbul", code: "IST" },
-    { name: "Paris", code: "PRS" },
-  ];
+export default function FiltrosPrograma({ programas, anoIni, anoFim }) {
+  const [selectedPrograma, setSelectedPrograma] = useState(null);
+  const [inputAnoIni, setInputAnoIni] = useState(anoIni);
+  const [inputAnoFim, setInputAnoFim] = useState(anoFim);
 
   const styleFiltrosContainer = {
     display: "flex",
@@ -24,6 +19,11 @@ export default function FiltrosPrograma({programa, anoIni, anoFim}) {
     marginRight: "10px",
   };
 
+  const programaOptions = programas.map((programa) => ({
+    label: programa.nome,
+    value: programa.id,
+  }));
+
   return (
     <div style={styleFiltrosContainer}>
       <div>
@@ -31,19 +31,28 @@ export default function FiltrosPrograma({programa, anoIni, anoFim}) {
       </div>
       <div style={styleInputContainer}>
         <Dropdown
-          value={selectedCity}
-          onChange={(e) => setSelectedCity(e.value)}
-          options={programa}
-          optionLabel="name"
+          value={selectedPrograma}
+          options={programaOptions}
+          onChange={(e) => setSelectedPrograma(e.value)}
           placeholder="Seleciona o Programa"
           className="w-full md:w-14rem"
         />
       </div>
       <div style={styleInputContainer}>
-        <InputText keyfilter="int" placeholder="Ano Inicial" onChange={(e)=> set} />
+        <InputText
+          keyfilter="int"
+          placeholder="Ano Inicial"
+          value={inputAnoIni}
+          onChange={(e) => setInputAnoIni(e.target.value)}
+        />
       </div>
       <div style={styleInputContainer}>
-        <InputText keyfilter="int" placeholder="Ano Final" />
+        <InputText
+          keyfilter="int"
+          placeholder="Ano Final"
+          value={inputAnoFim}
+          onChange={(e) => setInputAnoFim(e.target.value)}
+        />
       </div>
     </div>
   );
