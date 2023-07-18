@@ -38,7 +38,10 @@ export default function FiltrosPrograma({
         <Dropdown
           value={selectedPrograma}
           options={programaOptions}
-          onChange={(e) => setSelectedPrograma(e.value)}
+          onChange={(e) => {
+            setSelectedPrograma(e.value);
+            onFiltrosChange(e.value, inputAnoIni, inputAnoFim);
+          }}
           placeholder="Seleciona o Programa"
           className="w-full md:w-14rem"
         />

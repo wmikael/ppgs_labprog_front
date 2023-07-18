@@ -7,10 +7,13 @@ import ProducaoVsQualis from "../../components/ProducaoVsQualis";
 
 export function Programa() {
   const [programas, setProgramas] = useState([]);
+  const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
   const [anoFim, setAnoFim] = useState("");
   const [dadosTabela, setDadosTabela] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
+  const [tableLoaded, setTableLoaded] = useState(false);
+  const [chartLoaded, setChartLoaded] = useState(false);
 
   useEffect(() => {
     axios
@@ -21,44 +24,55 @@ export function Programa() {
       .catch((error) => console.error(error));
   }, []);
 
-  const handleFiltrosChange = (programaSelecionado, anoIni, anoFim) => {
+  const handleFiltrosChange = (selectedPrograma, anoIni, anoFim) => {
+    console.log("Filtros alterados:", selectedPrograma, anoIni, anoFim);
+    setSelectedPrograma(selectedPrograma);
     setAnoIni(anoIni);
     setAnoFim(anoFim);
   };
 
-  const handlePesquisarTabela = (anoIni, anoFim) => {
+  const handlePesquisar = () => {
+    console.log("ID do Programa:", selectedPrograma);
     console.log("Ano Inicial:", anoIni);
     console.log("Ano Final:", anoFim);
 
-    if (!anoIni || !anoFim || anoIni.trim() === '' || anoFim.trim() === '') {
-      console.error("Ano inicial e ano final devem ser informados");
-      return;
-    }
+    // if (
+    //   !selectedPrograma ||
+    //   !anoIni ||
+    //   !anoFim ||
+    //   selectedPrograma.trim() === "" ||
+    //   anoIni.trim() === "" ||
+    //   anoFim.trim() === ""
+    // ) {
+    //   console.error("Programa, ano inicial e ano final devem ser informados");
+    //   return;
+    // }
 
     axios
-      .get(`http://localhost:8080/api/Docente/obterProducoesQualis/${anoIni}/${anoFim}`)
+      .get(
+        `http://localhost:8080/api/Docente/obterProducoesQualis/${anoIni}/${anoFim}`
+      )
       .then((response) => {
         setDadosTabela(response.data);
+        setTableLoaded(true);
       })
-      .catch((error) => console.error(error));
-  };
-
-  const handlePesquisarGrafico = (idProg, anoIni, anoFim) => {
-    console.log("ID do Programa:", idProg);
-    console.log("Ano Inicial:", anoIni);
-    console.log("Ano Final:", anoFim);
-
-    if (!idProg || !anoIni || !anoFim || idProg.trim() === '' || anoIni.trim() === '' || anoFim.trim() === '') {
-      console.error("Programa, ano inicial e ano final devem ser informados");
-      return;
-    }
+      .catch((error) => {
+        setTableLoaded(false);
+        console.error(error);
+      });
 
     axios
-      .get(`http://localhost:8080/api/v1/qualis/producoesQualis/${idProg}/${anoIni}/${anoFim}`)
+      .get(
+        `http://localhost:8080/api/v1/qualis/producoesQualis/${selectedPrograma}/${anoIni}/${anoFim}`
+      )
       .then((response) => {
         setDadosGrafico(response.data);
+        setChartLoaded(true);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setChartLoaded(false);
+        console.error(error);
+      });
   };
 
   return (
@@ -68,21 +82,25 @@ export function Programa() {
           programas={programas}
           anoIni={anoIni}
           anoFim={anoFim}
+          selectedPrograma={selectedPrograma}
           onFiltrosChange={handleFiltrosChange}
         />
-        <button onClick={() => handlePesquisarTabela(anoIni, anoFim)}>Pesquisar Tabela</button>
-        <button onClick={() => handlePesquisarGrafico(selectedPrograma, anoIni, anoFim)}>Pesquisar Gráfico</button>
+        <button onClick={handlePesquisar}>Pesquisar</button>
       </div>
 
-      <div>
-        <h4>Table:</h4>
-        <DocenteTable data={dadosTabela} />
-      </div>
+      {tableLoaded && (
+        <div>
+          <h4>ProducaoVsQualis:</h4>
+          <ProducaoVsQualis data={dadosGrafico} anoIni={anoIni} anoFim={anoFim} />
+        </div>
+      )}
 
-      <div>
-        <h4>ProducaoVsQualis:</h4>
-        <ProducaoVsQualis data={dadosGrafico} />
-      </div>
+      {chartLoaded && (
+        <div>
+          <h4>Table:</h4>
+          <DocenteTable data={dadosTabela} />
+        </div>
+      )}
     </div>
   );
 }
