@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Card } from "primereact/card";
 
 const IndicadoresCapes = ({
@@ -49,7 +49,7 @@ const IndicadoresCapes = ({
 
   return (
     <div>
-      <h2>Indicadores</h2>
+      <h4>Indicadores:</h4>
       <div style={containerStyle}>
         <Card title="Total de Produções" style={cardStyle}>
           <p style={quantidadeProducoesStyle}>{quantidadeProducoes}</p>
