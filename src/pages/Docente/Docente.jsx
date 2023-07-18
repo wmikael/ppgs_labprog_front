@@ -1,69 +1,128 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Programa.css";
-import FiltrosPrograma from "../../components/FiltrosPrograma";
-import { DataTableComponent } from "../../components/DataTableComponent";
+import "./Docente.css";
+import DocenteTable from "../../components/DocenteTable";
+import ProducaoVsQualis from "../../components/ProducaoVsQualis";
+import FiltrosDocente from "../../components/FiltrosDocente";
+import IndicadoresCapes from "../../components/IndicadoresCapes";
 
-export function Programa() {
+export function Docente() {
+  // Estados "reais" - atualizados apenas no clique de Pesquisar
   const [programas, setProgramas] = useState([]);
+  const [docentes, setDocentes] = useState([]);
+  // const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
   const [anoFim, setAnoFim] = useState("");
+  const [indicadores, setIndicadores] = useState({});
+  // Estados temporários - atualizados conforme o usuário interage com os campos do filtro
+  const [tempSelectedDocente, setTempSelectedDocente] = useState(null);
+  const [tempAnoIni, setTempAnoIni] = useState("");
+  const [tempAnoFim, setTempAnoFim] = useState("");
+
   const [dadosTabela, setDadosTabela] = useState([]);
+  const [dadosGrafico, setDadosGrafico] = useState([]);
+  const [tableLoaded, setTableLoaded] = useState(false);
+  const [indicadoresQualisLoaded, setIndicadoresQualisLoaded] = useState(false);
+  const [chartLoaded, setChartLoaded] = useState(false);
 
   useEffect(() => {
-    // Buscar os programas quando o componente for montado
     axios
-      .get("http://localhost:8080/api/programa/all-programas")
+      .get("http://localhost:8080/api/Docente/obterTodosDocentes")
       .then((response) => {
-        setProgramas([...response.data]);
+        setDocentes([...response.data]);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  const handleFiltrosChange = (programaSelecionado, anoIni, anoFim) => {
-    // Atualizar os valores dos filtros
-    setAnoIni(anoIni);
-    setAnoFim(anoFim);
+  const handleFiltrosChange = (selectedDocente, anoIni, anoFim) => {
+    console.log("Filtros alterados:", selectedDocente, anoIni, anoFim);
+    setTempSelectedDocente(selectedDocente);
+    setTempAnoIni(anoIni);
+    setTempAnoFim(anoFim);
   };
 
   const handlePesquisar = () => {
-    // Chamada do Axios para buscar os dados da tabela com base nos filtros
-    axios
-      .get(`http://localhost:8080/api/obterProducoesQualis/${anoIni}/${anoFim}`)
-      .then((response) => {
-        // Atualizar os dados da tabela com a resposta da API
-        setDadosTabela(response.data);
-      })
-      .catch((error) => console.error(error));
-  };
+    // setSelectedPrograma(tempSelectedPrograma);
+    setAnoIni(tempAnoIni);
+    setAnoFim(tempAnoFim);
 
-  const header = (
-    <div className="flex flex-wrap align-items-center justify-content-between gap-2">
-      <span className="text-xl text-900 font-bold">Products</span>
-    </div>
-  );
+    // Agora essas requisições usarão os estados atualizados.
+    makeRequestsWith(tempSelectedDocente, tempAnoIni, tempAnoFim);
+  };
+  const makeRequestsWith = (docente, anoIni, anoFim) => {
+    axios
+      .get(
+        `http://localhost:8080/api/v1/qualis/obterIndicadoresCapesDocente/${docente}/${anoIni}/${anoFim}`
+      )
+      .then((response) => {
+        const { indice } = response.data;
+        const { indiceRest, indiceNRest, indiceGeral } = indice;
+
+        const quantidadeProducoes = response.data.producoes.length;
+
+        setIndicadores({
+          indiceRest,
+          indiceNRest,
+          indiceGeral,
+          quantidadeProducoes,
+        });
+        console.log(indicadores);
+        setIndicadoresQualisLoaded(true);
+      })
+      .catch((error) => {
+        console.error("Erro na requisição:", error);
+      });
+
+    // axios
+    //   .get(
+    //     `http://localhost:8080/api/v1/qualis/producoesQualis/${programa}/${anoIni}/${anoFim}`
+    //   )
+    //   .then((response) => {
+    //     setDadosGrafico(response.data);
+    //     setChartLoaded(true);
+    //   })
+    //   .catch((error) => {
+    //     setChartLoaded(false);
+    //     console.error(error);
+    //   });
+  };
 
   return (
     <div>
       <div className="card flex justify-content-center">
-        <FiltrosPrograma
-          programas={programas}
-          anoIni={anoIni}
-          anoFim={anoFim}
+        <FiltrosDocente
+          docentes={docentes}
+          anoIni={tempAnoIni}
+          anoFim={tempAnoFim}
+          selectedPrograma={tempSelectedDocente}
           onFiltrosChange={handleFiltrosChange}
         />
         <button onClick={handlePesquisar}>Pesquisar</button>
       </div>
 
-      {/* <div>
-        <h4>Chart:</h4>
-        <StackedBar />
-      </div> */}
+      {indicadoresQualisLoaded && (
+        <div>
+         <IndicadoresCapes {...indicadores} />
+        </div>
+      )}
 
-      <div>
-        <h4>Table:</h4>
-        <DataTableComponent data={dadosTabela} header={header} />
-      </div>
+      {tableLoaded && (
+        <div>
+          <h4>ProducaoVsQualis:</h4>
+          <ProducaoVsQualis
+            data={dadosGrafico}
+            anoIni={anoIni}
+            anoFim={anoFim}
+          />
+        </div>
+      )}
+
+      {chartLoaded && (
+        <div>
+          <h4>Table:</h4>
+          <DocenteTable data={dadosTabela} />
+        </div>
+      )}
     </div>
   );
 }
