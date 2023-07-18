@@ -6,10 +6,17 @@ import DocenteTable from "../../components/DocenteTable";
 import ProducaoVsQualis from "../../components/ProducaoVsQualis";
 
 export function Programa() {
+  // Estados "reais" - atualizados apenas no clique de Pesquisar
   const [programas, setProgramas] = useState([]);
-  const [selectedPrograma, setSelectedPrograma] = useState(null);
+  // const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
   const [anoFim, setAnoFim] = useState("");
+
+  // Estados temporários - atualizados conforme o usuário interage com os campos do filtro
+  const [tempSelectedPrograma, setTempSelectedPrograma] = useState(null);
+  const [tempAnoIni, setTempAnoIni] = useState("");
+  const [tempAnoFim, setTempAnoFim] = useState("");
+
   const [dadosTabela, setDadosTabela] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [tableLoaded, setTableLoaded] = useState(false);
@@ -26,32 +33,22 @@ export function Programa() {
 
   const handleFiltrosChange = (selectedPrograma, anoIni, anoFim) => {
     console.log("Filtros alterados:", selectedPrograma, anoIni, anoFim);
-    setSelectedPrograma(selectedPrograma);
-    setAnoIni(anoIni);
-    setAnoFim(anoFim);
+    setTempSelectedPrograma(selectedPrograma);
+    setTempAnoIni(anoIni);
+    setTempAnoFim(anoFim);
   };
 
   const handlePesquisar = () => {
-    console.log("ID do Programa:", selectedPrograma);
-    console.log("Ano Inicial:", anoIni);
-    console.log("Ano Final:", anoFim);
+    // setSelectedPrograma(tempSelectedPrograma);
+    setAnoIni(tempAnoIni);
+    setAnoFim(tempAnoFim);
 
-    // if (
-    //   !selectedPrograma ||
-    //   !anoIni ||
-    //   !anoFim ||
-    //   selectedPrograma.trim() === "" ||
-    //   anoIni.trim() === "" ||
-    //   anoFim.trim() === ""
-    // ) {
-    //   console.error("Programa, ano inicial e ano final devem ser informados");
-    //   return;
-    // }
-
+    // Agora essas requisições usarão os estados atualizados.
+    makeRequestsWith(tempSelectedPrograma, tempAnoIni, tempAnoFim);
+  };
+  const makeRequestsWith = (programa, anoIni, anoFim) => {
     axios
-      .get(
-        `http://localhost:8080/api/Docente/obterProducoesQualis/${anoIni}/${anoFim}`
-      )
+      .get(`http://localhost:8080/api/Docente/obterProducoesQualis/${anoIni}/${anoFim}`)
       .then((response) => {
         setDadosTabela(response.data);
         setTableLoaded(true);
@@ -62,9 +59,7 @@ export function Programa() {
       });
 
     axios
-      .get(
-        `http://localhost:8080/api/v1/qualis/producoesQualis/${selectedPrograma}/${anoIni}/${anoFim}`
-      )
+      .get(`http://localhost:8080/api/v1/qualis/producoesQualis/${programa}/${anoIni}/${anoFim}`)
       .then((response) => {
         setDadosGrafico(response.data);
         setChartLoaded(true);
@@ -73,16 +68,17 @@ export function Programa() {
         setChartLoaded(false);
         console.error(error);
       });
-  };
+};
+
 
   return (
     <div>
       <div className="card flex justify-content-center">
         <FiltrosPrograma
           programas={programas}
-          anoIni={anoIni}
-          anoFim={anoFim}
-          selectedPrograma={selectedPrograma}
+          anoIni={tempAnoIni}
+          anoFim={tempAnoFim}
+          selectedPrograma={tempSelectedPrograma}
           onFiltrosChange={handleFiltrosChange}
         />
         <button onClick={handlePesquisar}>Pesquisar</button>
@@ -91,7 +87,11 @@ export function Programa() {
       {tableLoaded && (
         <div>
           <h4>ProducaoVsQualis:</h4>
-          <ProducaoVsQualis data={dadosGrafico} anoIni={anoIni} anoFim={anoFim} />
+          <ProducaoVsQualis
+            data={dadosGrafico}
+            anoIni={anoIni}
+            anoFim={anoFim}
+          />
         </div>
       )}
 
