@@ -20,7 +20,8 @@ export function Docente() {
   const [tempAnoFim, setTempAnoFim] = useState("");
 
   const [dadosTabela, setDadosTabela] = useState([]);
-  const [dadosGrafico, setDadosGrafico] = useState([]);
+  const [dadosGraficoPPQ, setDadosGraficoPPQ] = useState([]);
+  const [dadosGraficoPCQ, setDadosGraficoPCQ] = useState([]);
   const [tableLoaded, setTableLoaded] = useState(false);
   const [indicadoresQualisLoaded, setIndicadoresQualisLoaded] = useState(false);
   const [chartLoaded, setChartLoaded] = useState(false);
@@ -35,7 +36,7 @@ export function Docente() {
   }, []);
 
   const handleFiltrosChange = (selectedDocente, anoIni, anoFim) => {
-    console.log("Filtros alterados:", selectedDocente, anoIni, anoFim);
+    // console.log("Filtros alterados:", selectedDocente, anoIni, anoFim);
     setTempSelectedDocente(selectedDocente);
     setTempAnoIni(anoIni);
     setTempAnoFim(anoFim);
@@ -50,6 +51,7 @@ export function Docente() {
     makeRequestsWith(tempSelectedDocente, tempAnoIni, tempAnoFim);
   };
   const makeRequestsWith = (docente, anoIni, anoFim) => {
+    //Indicadores
     axios
       .get(
         `http://localhost:8080/api/v1/qualis/obterIndicadoresCapesDocente/${docente}/${anoIni}/${anoFim}`
@@ -66,25 +68,41 @@ export function Docente() {
           indiceGeral,
           quantidadeProducoes,
         });
-        console.log(indicadores);
+        // console.log(indicadores);
         setIndicadoresQualisLoaded(true);
       })
       .catch((error) => {
+        setIndicadoresQualisLoaded(false);
         console.error("Erro na requisição:", error);
       });
 
-    // axios
-    //   .get(
-    //     `http://localhost:8080/api/v1/qualis/producoesQualis/${programa}/${anoIni}/${anoFim}`
-    //   )
-    //   .then((response) => {
-    //     setDadosGrafico(response.data);
-    //     setChartLoaded(true);
-    //   })
-    //   .catch((error) => {
-    //     setChartLoaded(false);
-    //     console.error(error);
-    //   });
+    // Producao em Periodicos vs Qualis:
+    axios
+      .get(
+        `http://localhost:8080/api/v1/qualis/obterProducoesQualisPorTipo/${docente}/${anoIni}/${anoFim}/ARTIGO-PUBLICADO`
+      )
+      .then((response) => {
+        setDadosGraficoPPQ(response.data);
+        setChartLoaded(true);
+      })
+      .catch((error) => {
+        setChartLoaded(false);
+        console.error(error);
+      });
+
+    // Producao em Congressos vs Qualis:
+    axios
+      .get(
+        `http://localhost:8080/api/v1/qualis/obterProducoesQualisPorTipo/${docente}/${anoIni}/${anoFim}/TRABALHO-EM-EVENTOS`
+      )
+      .then((response) => {
+        setDadosGraficoPCQ(response.data);
+        setChartLoaded(true);
+      })
+      .catch((error) => {
+        setChartLoaded(false);
+        console.error(error);
+      });
   };
 
   return (
@@ -102,15 +120,15 @@ export function Docente() {
 
       {indicadoresQualisLoaded && (
         <div>
-         <IndicadoresCapes {...indicadores} />
+          <IndicadoresCapes {...indicadores} />
         </div>
       )}
 
-      {tableLoaded && (
+      {chartLoaded && (
         <div>
-          <h4>ProducaoVsQualis:</h4>
+          <h4>Produção em Periódicos vs Qualis :</h4>
           <ProducaoVsQualis
-            data={dadosGrafico}
+            data={dadosGraficoPPQ}
             anoIni={anoIni}
             anoFim={anoFim}
           />
@@ -118,6 +136,18 @@ export function Docente() {
       )}
 
       {chartLoaded && (
+        <div>
+          <h4>Produção em Congressos vs Qualis :</h4>
+          <ProducaoVsQualis
+            data={dadosGraficoPCQ}
+            anoIni={anoIni}
+            anoFim={anoFim}
+          />
+        </div>
+      )}
+
+      
+      {tableLoaded && (
         <div>
           <h4>Table:</h4>
           <DocenteTable data={dadosTabela} />
