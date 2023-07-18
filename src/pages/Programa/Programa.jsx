@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Programa.css";
 import FiltrosPrograma from "../../components/FiltrosPrograma";
-import DocenteTable from "../../components/DocenteTable";
-import ProducaoVsQualis from "../../components/ProducaoVsQualis";
+import TableDocente from "../../components/TableDocente";
+import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
 
 export function Programa() {
   // Estados "reais" - atualizados apenas no clique de Pesquisar
@@ -32,7 +32,7 @@ export function Programa() {
   }, []);
 
   const handleFiltrosChange = (selectedPrograma, anoIni, anoFim) => {
-    console.log("Filtros alterados:", selectedPrograma, anoIni, anoFim);
+    // console.log("Filtros alterados:", selectedPrograma, anoIni, anoFim);
     setTempSelectedPrograma(selectedPrograma);
     setTempAnoIni(anoIni);
     setTempAnoFim(anoFim);
@@ -48,7 +48,7 @@ export function Programa() {
   };
   const makeRequestsWith = (programa, anoIni, anoFim) => {
     axios
-      .get(`http://localhost:8080/api/Docente/obterProducoesQualis/${anoIni}/${anoFim}`)
+      .get(`http://localhost:8080/api/docente/obterProducoesQualis/${anoIni}/${anoFim}`)
       .then((response) => {
         setDadosTabela(response.data);
         setTableLoaded(true);
@@ -86,8 +86,8 @@ export function Programa() {
 
       {tableLoaded && (
         <div>
-          <h4>ProducaoVsQualis:</h4>
-          <ProducaoVsQualis
+          <h4>ChartProducaoVsQualis:</h4>
+          <ChartProducaoVsQualis
             data={dadosGrafico}
             anoIni={anoIni}
             anoFim={anoFim}
@@ -98,7 +98,7 @@ export function Programa() {
       {chartLoaded && (
         <div>
           <h4>Table:</h4>
-          <DocenteTable data={dadosTabela} />
+          <TableDocente data={dadosTabela} />
         </div>
       )}
     </div>
