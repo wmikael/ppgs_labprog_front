@@ -8,7 +8,6 @@ import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
 export function Programa() {
   // Estados "reais" - atualizados apenas no clique de Pesquisar
   const [programas, setProgramas] = useState([]);
-  // const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
   const [anoFim, setAnoFim] = useState("");
 
@@ -32,21 +31,22 @@ export function Programa() {
   }, []);
 
   const handleFiltrosChange = (selectedPrograma, anoIni, anoFim) => {
-    // console.log("Filtros alterados:", selectedPrograma, anoIni, anoFim);
     setTempSelectedPrograma(selectedPrograma);
     setTempAnoIni(anoIni);
     setTempAnoFim(anoFim);
   };
 
   const handlePesquisar = () => {
-    // setSelectedPrograma(tempSelectedPrograma);
     setAnoIni(tempAnoIni);
     setAnoFim(tempAnoFim);
 
     // Agora essas requisições usarão os estados atualizados.
     makeRequestsWith(tempSelectedPrograma, tempAnoIni, tempAnoFim);
   };
+
   const makeRequestsWith = (programa, anoIni, anoFim) => {
+    setTableLoaded(false);
+    setChartLoaded(false);
     axios
       .get(`http://localhost:8080/api/docente/obterProducoesQualis/${anoIni}/${anoFim}`)
       .then((response) => {
@@ -68,8 +68,7 @@ export function Programa() {
         setChartLoaded(false);
         console.error(error);
       });
-};
-
+  };
 
   return (
     <div>
@@ -84,7 +83,7 @@ export function Programa() {
         <button onClick={handlePesquisar}>Pesquisar</button>
       </div>
 
-      {tableLoaded && (
+      {chartLoaded && (
         <div>
           <h4>ChartProducaoVsQualis:</h4>
           <ChartProducaoVsQualis
@@ -95,7 +94,7 @@ export function Programa() {
         </div>
       )}
 
-      {chartLoaded && (
+      {tableLoaded && (
         <div>
           <h4>Table:</h4>
           <TableDocente data={dadosTabela} />

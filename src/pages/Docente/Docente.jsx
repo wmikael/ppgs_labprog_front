@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Docente.css";
-import DocenteTable from "../../components/DocenteTable";
-import ProducaoVsQualis from "../../components/ProducaoVsQualis";
+import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
 import FiltrosDocente from "../../components/FiltrosDocente";
 import IndicadoresCapes from "../../components/IndicadoresCapes";
+import DataTableComponent from "../../components/DataTableComponent";
 
 export function Docente() {
+  const [isIndicadoresCapesLoaded, setIsIndicadoresCapesLoaded] = useState(false);
+  const [isProducoesQualisPPQLoaded, setIsProducoesQualisPPQLoaded] = useState(false);
+  const [isProducoesQualisPCQLoaded, setIsProducoesQualisPCQLoaded] = useState(false);
+  const [isOrientacoesDocenteLoaded, setIsOrientacoesDocenteLoaded] = useState(false);
+  const [isProducoesDocenteLoaded, setIsProducoesDocenteLoaded] = useState(false);
+  const [isTecnicasDocenteLoaded, setIsTecnicasDocenteLoaded] = useState(false);
+
   // Estados "reais" - atualizados apenas no clique de Pesquisar
-  const [programas, setProgramas] = useState([]);
   const [docentes, setDocentes] = useState([]);
   // const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
@@ -19,16 +25,17 @@ export function Docente() {
   const [tempAnoIni, setTempAnoIni] = useState("");
   const [tempAnoFim, setTempAnoFim] = useState("");
 
-  const [dadosTabela, setDadosTabela] = useState([]);
+  const [selectedDocente, setSelectedDocente] = useState(null);
+
+  const [dadosTabelaOTC, setDadosTabelaOTC] = useState([]);
+  const [dadosTabelaATG, setDadosTabelaATG] = useState([]);
+  const [dadosTabelaTEC, setDadosTabelaTEC] = useState([]);
   const [dadosGraficoPPQ, setDadosGraficoPPQ] = useState([]);
   const [dadosGraficoPCQ, setDadosGraficoPCQ] = useState([]);
-  const [tableLoaded, setTableLoaded] = useState(false);
-  const [indicadoresQualisLoaded, setIndicadoresQualisLoaded] = useState(false);
-  const [chartLoaded, setChartLoaded] = useState(false);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/Docente/obterTodosDocentes")
+      .get("http://localhost:8080/api/docente/obterTodosDocentes")
       .then((response) => {
         setDocentes([...response.data]);
       })
@@ -43,7 +50,7 @@ export function Docente() {
   };
 
   const handlePesquisar = () => {
-    // setSelectedPrograma(tempSelectedPrograma);
+    setSelectedDocente(tempSelectedDocente);
     setAnoIni(tempAnoIni);
     setAnoFim(tempAnoFim);
 
@@ -69,10 +76,10 @@ export function Docente() {
           quantidadeProducoes,
         });
         // console.log(indicadores);
-        setIndicadoresQualisLoaded(true);
+        setIsIndicadoresCapesLoaded(true);
       })
       .catch((error) => {
-        setIndicadoresQualisLoaded(false);
+        setIsIndicadoresCapesLoaded(false);
         console.error("Erro na requisição:", error);
       });
 
@@ -83,10 +90,10 @@ export function Docente() {
       )
       .then((response) => {
         setDadosGraficoPPQ(response.data);
-        setChartLoaded(true);
+        setIsProducoesQualisPPQLoaded(true);
       })
       .catch((error) => {
-        setChartLoaded(false);
+        setIsProducoesQualisPPQLoaded(false);
         console.error(error);
       });
 
@@ -97,10 +104,71 @@ export function Docente() {
       )
       .then((response) => {
         setDadosGraficoPCQ(response.data);
-        setChartLoaded(true);
+        setIsProducoesQualisPCQLoaded(true);
       })
       .catch((error) => {
-        setChartLoaded(false);
+        setIsProducoesQualisPCQLoaded(false);
+        console.error(error);
+      });
+
+    // Tabela orientacoes
+    axios
+      .get(
+        `http://localhost:8080/api/docente/obterOrientacoesDocente/${docente}/${anoIni}/${anoFim}`
+      )
+      .then((response) => {
+        const dataTable = response.data.map((item) => ({
+          discente: item.discente,
+          tipo: item.tipo,
+          titulo: item.titulo,
+          ano: item.ano,
+        }));
+        setDadosTabelaOTC(dataTable);
+        setIsOrientacoesDocenteLoaded(true);
+      })
+      .catch((error) => {
+        setIsOrientacoesDocenteLoaded(false);
+        console.error(error);
+      });
+
+    // Tabela Artigos
+    axios
+      .get(
+        `http://localhost:8080/api/docente/obterProducoesDocente/${docente}/${anoIni}/${anoFim}`
+      )
+      .then((response) => {
+        const dataTable = response.data.map((item) => ({
+          titulo: item.titulo,
+          nomeLocal: item.nomeLocal,
+          tipo: item.tipo,
+          qualis: item.qualis,
+          ano: item.ano,
+        }));
+        setDadosTabelaATG(dataTable);
+        // console.log(dadosTabelaATG);
+        setIsProducoesDocenteLoaded(true);
+      })
+      .catch((error) => {
+        setIsProducoesDocenteLoaded(false);
+        console.error(error);
+      });
+
+    // Tabela Tecnicas
+    axios
+      .get(
+        `http://localhost:8080/api/docente/obterTecnicasDocente/${docente}/${anoIni}/${anoFim}`
+      )
+      .then((response) => {
+        const dataTable = response.data.map((item) => ({
+          titulo: item.titulo,
+          tipo: item.tipo,
+          ano: item.ano,
+        }));
+        setDadosTabelaTEC(dataTable);
+        setIsTecnicasDocenteLoaded(true);
+      })
+      .catch((error) => {
+        setIsTecnicasDocenteLoaded(false);
         console.error(error);
       });
   };
@@ -118,16 +186,16 @@ export function Docente() {
         <button onClick={handlePesquisar}>Pesquisar</button>
       </div>
 
-      {indicadoresQualisLoaded && (
+      {isIndicadoresCapesLoaded  && (
         <div>
           <IndicadoresCapes {...indicadores} />
         </div>
       )}
 
-      {chartLoaded && (
+      {isProducoesQualisPPQLoaded  && (
         <div>
           <h4>Produção em Periódicos vs Qualis :</h4>
-          <ProducaoVsQualis
+          <ChartProducaoVsQualis
             data={dadosGraficoPPQ}
             anoIni={anoIni}
             anoFim={anoFim}
@@ -135,10 +203,10 @@ export function Docente() {
         </div>
       )}
 
-      {chartLoaded && (
+      {isProducoesQualisPCQLoaded  && (
         <div>
           <h4>Produção em Congressos vs Qualis :</h4>
-          <ProducaoVsQualis
+          <ChartProducaoVsQualis
             data={dadosGraficoPCQ}
             anoIni={anoIni}
             anoFim={anoFim}
@@ -146,11 +214,24 @@ export function Docente() {
         </div>
       )}
 
-      
-      {tableLoaded && (
+      {isOrientacoesDocenteLoaded  && (
         <div>
-          <h4>Table:</h4>
-          <DocenteTable data={dadosTabela} />
+          <h4>Orientações:</h4>
+          <DataTableComponent data={dadosTabelaOTC} />
+        </div>
+      )}
+
+      {isProducoesDocenteLoaded  && (
+        <div>
+          <h4>Artigos:</h4>
+          <DataTableComponent data={dadosTabelaATG} />
+        </div>
+      )}
+
+      {isTecnicasDocenteLoaded  && (
+        <div>
+          <h4>Tecnicas:</h4>
+          <DataTableComponent data={dadosTabelaTEC} />
         </div>
       )}
     </div>
