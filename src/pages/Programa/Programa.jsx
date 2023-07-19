@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Programa.css";
-import FiltrosPrograma from "../../components/FiltrosPrograma";
-import TableDocente from "../../components/TableDocente";
+import FiltrosPrograma from "../../components/Filtros/FiltrosPrograma";
+import TableDocente from "../../components/Tables/TableDocente";
 import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
 import IndicadoresCapes from "../../components/IndicadoresCapes";
 

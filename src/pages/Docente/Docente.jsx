@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Docente.css";
 import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
-import FiltrosDocente from "../../components/FiltrosDocente";
+import FiltrosDocente from "../../components/Filtros/FiltrosDocente";
 import IndicadoresCapes from "../../components/IndicadoresCapes";
 import DataTableComponent from "../../components/DataTableComponent";
 

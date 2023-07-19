@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Producoes.css";
-import FiltrosProducoes from "../../components/FiltrosProducoes";
+import FiltrosProducoes from "../../components/Filtros/FiltrosProducoes";
 import DataTableComponent from "../../components/DataTableComponent";
-import TableProducoes from "../../components/TableProducoes";
+import TableProducoes from "../../components/Tables/TableProducoes";
 
 export function Producoes() {
   const [programas, setProgramas] = useState([]);
