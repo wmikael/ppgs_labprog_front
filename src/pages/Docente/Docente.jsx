@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Docente.css";
 import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
-import FiltrosDocente from "../../components/Filtros/FiltrosDocente";
+import FiltrosDocente2 from "../../components/Filtros/FiltrosDocente2";
 import IndicadoresCapes from "../../components/IndicadoresCapes";
 import DataTableComponent from "../../components/DataTableComponent";
 
@@ -13,9 +13,10 @@ export function Docente() {
   const [isOrientacoesDocenteLoaded, setIsOrientacoesDocenteLoaded] = useState(false);
   const [isProducoesDocenteLoaded, setIsProducoesDocenteLoaded] = useState(false);
   const [isTecnicasDocenteLoaded, setIsTecnicasDocenteLoaded] = useState(false);
+  const [programas, setProgramas] = useState([]);
 
   // Estados "reais" - atualizados apenas no clique de Pesquisar
-  const [docentes, setDocentes] = useState([]);
+  // const [docentes, setDocentes] = useState([]);
   // const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [anoIni, setAnoIni] = useState("");
   const [anoFim, setAnoFim] = useState("");
@@ -25,6 +26,7 @@ export function Docente() {
   const [tempAnoIni, setTempAnoIni] = useState("");
   const [tempAnoFim, setTempAnoFim] = useState("");
 
+  const [selectedPrograma, setSelectedPrograma] = useState(null);
   const [selectedDocente, setSelectedDocente] = useState(null);
 
   const [dadosTabelaOTC, setDadosTabelaOTC] = useState([]);
@@ -35,29 +37,35 @@ export function Docente() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/docente/obterTodosDocentes")
+      .get("http://localhost:8080/api/programa/all-programas")
       .then((response) => {
-        setDocentes([...response.data]);
+        setProgramas(response.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  const handleFiltrosChange = (selectedDocente, anoIni, anoFim) => {
-    // console.log("Filtros alterados:", selectedDocente, anoIni, anoFim);
-    setTempSelectedDocente(selectedDocente);
-    setTempAnoIni(anoIni);
-    setTempAnoFim(anoFim);
+  const fetchDocentesPrograma = async (programaId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/programa/obterDocentesPrograma/${programaId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   };
 
-  const handlePesquisar = () => {
-    setSelectedDocente(tempSelectedDocente);
-    setAnoIni(tempAnoIni);
-    setAnoFim(tempAnoFim);
-
-    // Agora essas requisições usarão os estados atualizados.
-    makeRequestsWith(tempSelectedDocente, tempAnoIni, tempAnoFim);
+  const handleFiltrosChange = (Programa, Docente, anoIni, anoFim) => {
+    setSelectedPrograma(Programa);
+    setSelectedDocente(Docente);
+    // Atualiza estados temporários
+    setAnoIni(anoIni);
+    setAnoFim(anoFim);
+    console.log(selectedPrograma, selectedDocente, anoIni, anoFim);
   };
-  const makeRequestsWith = (docente, anoIni, anoFim) => {
+
+  const handlePesquisar = (docente, anoIni, anoFim) => {
     //Indicadores
     axios
       .get(
@@ -176,14 +184,16 @@ export function Docente() {
   return (
     <div>
       <div className="card flex justify-content-center">
-        <FiltrosDocente
-          docentes={docentes}
+        <FiltrosDocente2
+          programas={programas}
+          docentes={selectedDocente}
           anoIni={tempAnoIni}
           anoFim={tempAnoFim}
-          selectedPrograma={tempSelectedDocente}
           onFiltrosChange={handleFiltrosChange}
+          handleDocenteChange={setSelectedDocente}
+          fetchDocentesPrograma={fetchDocentesPrograma}
         />
-        <button onClick={handlePesquisar}>Pesquisar</button>
+        <button onClick={()=>handlePesquisar(selectedDocente, anoIni, anoFim)}>Pesquisar</button>
       </div>
 
       {isIndicadoresCapesLoaded  && (
