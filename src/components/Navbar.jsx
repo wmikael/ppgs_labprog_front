@@ -19,7 +19,18 @@ export function Navbar() {
         {
             label: 'Modificações',
             icon: 'pi pi-fw pi-user',
-            command: () => navigate('/')
+            items: [
+                {
+                    label: 'Produções',
+                    icon: 'pi pi-fw pi-bookmark',
+                    command: () => navigate('/producoes')
+                },
+                {
+                    label: 'Técnica',
+                    icon: 'pi pi-fw pi-bookmark',
+                    command: () => navigate('/tecnicas')
+                },
+            ]
         },
         {
             label: 'Quit',
