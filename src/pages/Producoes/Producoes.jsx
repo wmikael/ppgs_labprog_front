@@ -3,6 +3,7 @@ import axios from "axios";
 import "./Producoes.css";
 import FiltrosProducoes from "../../components/FiltrosProducoes";
 import DataTableComponent from "../../components/DataTableComponent";
+import TableProducoes from "../../components/TableProducoes";
 
 export function Producoes() {
   const [programas, setProgramas] = useState([]);
@@ -37,17 +38,13 @@ export function Producoes() {
     }
   };
 
-  const handleFiltrosChange = (
-    selectedPrograma,
-    selectedDocente,
-    anoIni,
-    anoFim
-  ) => {
-    setSelectedPrograma(selectedPrograma);
-    setSelectedDocente(selectedDocente);
+  const handleFiltrosChange = (Programa, Docente, anoIniVar, anoFimVar) => {
+    setSelectedPrograma(Programa);
+    setSelectedDocente(Docente);
     // Atualiza estados temporários
-    setTempAnoIni(anoIni);
-    setTempAnoFim(anoFim);
+    setAnoIni(anoIniVar);
+    setAnoFim(anoFimVar);
+    console.log(selectedPrograma, selectedDocente, anoIni, anoFim);
   };
 
   const handlePesquisar = async () => {
@@ -55,7 +52,7 @@ export function Producoes() {
       try {
         // Faça aqui a chamada para buscar os dados da tabela com base nos filtros selecionados
         const response = await axios.get(
-          `http://localhost:8080/api/producoes/obterTodasAsProducoes/${selectedDocente.value}/${anoIni}/${anoFim}`
+          `http://localhost:8080/api/producao/obterTodasAsProducoes/${selectedDocente}/${anoIni}/${anoFim}`
         );
         setDataTabela(response.data);
       } catch (error) {
@@ -67,20 +64,28 @@ export function Producoes() {
     }
   };
 
+  const styleTable = {
+    width: "80vw",
+  };
+
   return (
     <div>
-      <FiltrosProducoes
-        programas={programas}
-        docentes={selectedDocente}
-        anoIni={tempAnoIni}
-        anoFim={tempAnoFim}
-        onFiltrosChange={handleFiltrosChange}
-        handleDocenteChange={setSelectedDocente} // Adicione esta linha
-        fetchDocentesPrograma={fetchDocentesPrograma}
-      />
+      <div className="card flex justify-content-center">
+        <FiltrosProducoes
+          programas={programas}
+          docentes={selectedDocente}
+          anoIni={tempAnoIni}
+          anoFim={tempAnoFim}
+          onFiltrosChange={handleFiltrosChange}
+          handleDocenteChange={setSelectedDocente}
+          fetchDocentesPrograma={fetchDocentesPrograma}
+        />
+        <button onClick={handlePesquisar}>Pesquisar</button>
+      </div>
 
-      <button onClick={handlePesquisar}>Pesquisar</button>
-      {dataTabela.length > 0 && <DataTableComponent data={dataTabela} />}
+      <div style={styleTable}>
+        {dataTabela.length > 0 && <TableProducoes data={dataTabela} />}
+      </div>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function FiltrosProducoes({
 
   const handleDocenteChange = (e) => {
     setSelectedDocente(e.value);
-    onDocenteChange(e.value); // Chame a função de atualização do docente selecionado
+    onFiltrosChange(selectedPrograma, e.value, inputAnoIni, inputAnoFim); // Adicione esta linha
   };
 
   return (
