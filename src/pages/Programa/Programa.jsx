@@ -4,8 +4,11 @@ import "./Programa.css";
 import FiltrosPrograma from "../../components/FiltrosPrograma";
 import TableDocente from "../../components/TableDocente";
 import ChartProducaoVsQualis from "../../components/ChartProducaoVsQualis";
+import IndicadoresCapes from "../../components/IndicadoresCapes";
 
 export function Programa() {
+  const [isIndicadoresCapesLoaded, setIsIndicadoresCapesLoaded] = useState(false);
+  const [indicadores, setIndicadores] = useState({});
   // Estados "reais" - atualizados apenas no clique de Pesquisar
   const [programas, setProgramas] = useState([]);
   const [anoIni, setAnoIni] = useState("");
@@ -45,6 +48,33 @@ export function Programa() {
   };
 
   const makeRequestsWith = (programa, anoIni, anoFim) => {
+
+    //Indicadores
+    axios
+      .get(
+        `http://localhost:8080/api/v1/qualis/indicesPrograma/${programa}/${anoIni}/${anoFim}`
+      )
+      .then((response) => {
+        const { indice } = response.data;
+        const { indiceRest, indiceNRest, indiceGeral } = indice;
+
+        const quantidadeProducoes = response.data.producoes.length;
+
+        setIndicadores({
+          indiceRest,
+          indiceNRest,
+          indiceGeral,
+          quantidadeProducoes,
+        });
+        // console.log(indicadores);
+        setIsIndicadoresCapesLoaded(true);
+      })
+      .catch((error) => {
+        setIsIndicadoresCapesLoaded(false);
+        console.error("Erro na requisição:", error);
+      });
+
+
     setTableLoaded(false);
     setChartLoaded(false);
     axios
@@ -82,6 +112,13 @@ export function Programa() {
         />
         <button onClick={handlePesquisar}>Pesquisar</button>
       </div>
+
+      
+      {isIndicadoresCapesLoaded  && (
+        <div>
+          <IndicadoresCapes {...indicadores} />
+        </div>
+      )}
 
       {chartLoaded && (
         <div>
